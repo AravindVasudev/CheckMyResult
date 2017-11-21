@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/smtp"
 	"os"
 	"sync"
@@ -77,11 +78,17 @@ func requestAUCOE(stud student, results chan result) {
 		res.Results[extracted[i]] = extracted[i+1]
 	}
 
+	log.Println(res)
+
 	results <- res
-	sendResultEmail(results)
+
+	wg.Add(1)
+	go sendResultEmail(results)
 }
 
 func sendResultEmail(results chan result) {
+	defer wg.Done()
+
 	res := <-results
 
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
@@ -129,7 +136,5 @@ func main() {
 	wg.Wait()
 	close(results)
 
-	for res := range results {
-		fmt.Printf("%v - %v\n", res.student.EmailID, res.Name)
-	}
+	fmt.Println("Done.")
 }
