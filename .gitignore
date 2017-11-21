@@ -14,5 +14,5 @@
 .glide/
 
 # Configs
-./students.json
-./email_smtp.json
+students.json
+email_smtp.json
