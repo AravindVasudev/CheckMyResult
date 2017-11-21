@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/Rican7/retry"
 )
 
 const aucoe string = "http://aucoe.annauniv.edu/cgi-bin/result/cgrade.pl?regno="
@@ -58,9 +59,16 @@ func jsonFromFile(fileName string, store interface{}) {
 func requestAUCOE(stud student, results chan result) {
 	defer wg.Done()
 
-	doc, err := goquery.NewDocument(aucoe + stud.RegisterNumber)
+	var doc *goquery.Document
+	err := retry.Retry(func(attempt uint) error {
+		var err error
+
+		doc, err = goquery.NewDocument(aucoe + stud.RegisterNumber)
+		return err
+	})
+
 	if err != nil {
-		panic(err)
+		log.Fatalf("%v's request failed: %v", stud.RegisterNumber, err)
 	}
 
 	var extracted []string
