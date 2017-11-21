@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/smtp"
 	"os"
@@ -35,6 +37,7 @@ type emailData struct {
 
 var emailAuth smtp.Auth
 var emailAuthData emailData
+var emailTemplate *template.Template
 
 func jsonFromFile(fileName string, store interface{}) {
 	raw, err := ioutil.ReadFile(fileName)
@@ -81,11 +84,18 @@ func requestAUCOE(stud student, results chan result) {
 func sendResultEmail(results chan result) {
 	res := <-results
 
-	mime := "MIME-version: 1.0;\nContent-Type: text/plain; charset=\"UTF-8\";\n\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	subject := "Subject: Semester Result\n"
-	msg := []byte(subject + mime + "\n" + res.Name)
 
-	err := smtp.SendMail(emailAuthData.Server+":587", emailAuth, emailAuthData.EmailID, []string{res.student.EmailID}, msg)
+	buf := new(bytes.Buffer)
+	err := emailTemplate.Execute(buf, res)
+	if err != nil {
+		panic(err)
+	}
+
+	msg := []byte(subject + mime + "\n" + buf.String())
+
+	err = smtp.SendMail(emailAuthData.Server+":587", emailAuth, emailAuthData.EmailID, []string{res.student.EmailID}, msg)
 	if err != nil {
 		panic(err)
 	}
@@ -103,6 +113,12 @@ func main() {
 		emailAuthData.Password,
 		emailAuthData.Server,
 	)
+
+	var err error
+	emailTemplate, err = template.ParseFiles("./email_template.html")
+	if err != nil {
+		panic(err)
+	}
 
 	results := make(chan result, 256)
 	for _, stud := range students {
