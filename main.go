@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/smtp"
 	"os"
 	"sync"
 
@@ -25,6 +26,15 @@ type result struct {
 	Department string
 	Results    map[string]string
 }
+
+type emailData struct {
+	EmailID  string `json:"emailID"`
+	Password string `json:"password"`
+	Server   string `json:"server"`
+}
+
+var emailAuth smtp.Auth
+var emailAuthData emailData
 
 func jsonFromFile(fileName string, store interface{}) {
 	raw, err := ioutil.ReadFile(fileName)
@@ -67,9 +77,31 @@ func requestAUCOE(stud student, results chan result) {
 	results <- res
 }
 
+func sendResultEmail(results chan result) {
+	res := <-results
+
+	mime := "MIME-version: 1.0;\nContent-Type: text/plain; charset=\"UTF-8\";\n\n"
+	subject := "Subject: Semester Result\n"
+	msg := []byte(subject + mime + "\n" + res.Name)
+
+	err := smtp.SendMail(emailAuthData.Server, emailAuth, emailAuthData.EmailID, []string{res.student.EmailID}, msg)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	var students []student
 	jsonFromFile("./students.json", &students)
+
+	jsonFromFile("./email_smtp.json", &emailAuthData)
+
+	emailAuth = smtp.PlainAuth(
+		"",
+		emailAuthData.EmailID,
+		emailAuthData.Password,
+		emailAuthData.Server,
+	)
 
 	results := make(chan result, 256)
 	for _, stud := range students {
