@@ -57,7 +57,12 @@ func jsonFromFile(fileName string, store interface{}) {
 }
 
 func requestAUCOE(stud student, results chan result) {
-	defer wg.Done()
+	defer func() {
+		defer wg.Done()
+		if r := recover(); r != nil {
+			log.Printf("%v's request failed: %v", stud.RegisterNumber, r)
+		}
+	}()
 
 	var doc *goquery.Document
 	err := retry.Retry(func(attempt uint) error {
@@ -68,7 +73,7 @@ func requestAUCOE(stud student, results chan result) {
 	})
 
 	if err != nil {
-		log.Fatalf("%v's request failed: %v", stud.RegisterNumber, err)
+		panic(err)
 	}
 
 	var extracted []string
@@ -96,7 +101,12 @@ func requestAUCOE(stud student, results chan result) {
 }
 
 func sendResultEmail(results chan result) {
-	defer wg.Done()
+	defer func() {
+		defer wg.Done()
+		if r := recover(); r != nil {
+			log.Printf("Cannot send the email: %v", r)
+		}
+	}()
 
 	res := <-results
 
