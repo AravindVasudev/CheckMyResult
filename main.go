@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/Rican7/retry"
@@ -128,6 +129,8 @@ func sendResultEmail(results chan result) {
 }
 
 func main() {
+	start := time.Now()
+
 	var students []student
 	jsonFromFile("./students.json", &students)
 
@@ -155,5 +158,6 @@ func main() {
 	wg.Wait()
 	close(results)
 
-	fmt.Println("Done.")
+	elapsed := time.Since(start)
+	fmt.Println("Done. Time Elapsed:", elapsed)
 }

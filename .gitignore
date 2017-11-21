@@ -17,4 +17,5 @@ CheckMyResult
 
 # Configs
 students.json
+students_real.json
 email_smtp.json
