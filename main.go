@@ -75,6 +75,7 @@ func requestAUCOE(stud student, results chan result) {
 	}
 
 	results <- res
+	sendResultEmail(results)
 }
 
 func sendResultEmail(results chan result) {
@@ -84,7 +85,7 @@ func sendResultEmail(results chan result) {
 	subject := "Subject: Semester Result\n"
 	msg := []byte(subject + mime + "\n" + res.Name)
 
-	err := smtp.SendMail(emailAuthData.Server, emailAuth, emailAuthData.EmailID, []string{res.student.EmailID}, msg)
+	err := smtp.SendMail(emailAuthData.Server+":587", emailAuth, emailAuthData.EmailID, []string{res.student.EmailID}, msg)
 	if err != nil {
 		panic(err)
 	}
