@@ -1,8 +1,8 @@
 # CheckMyResult
 
-    > A helper program that scraps and emails results from Anna University servers during high traffic concurrently.
+  > A helper program that scraps and emails results from Anna University servers during high traffic concurrently.
 
-   #### older version of this project: [https://github.com/AravindVasudev/CheckMyResult_OLD]()
+   #### older version of this project: [https://github.com/AravindVasudev/CheckMyResult_OLD](https://github.com/AravindVasudev/CheckMyResult_OLD)
 
 ## What does this do?
 
@@ -10,8 +10,8 @@ This program takes a JSON array of student's register number with their email ID
 
 ## Dependencies
 
-   * [github.com/PuerkitoBio/goquery]()
-   * [github.com/Rican7/retry]()
+   * [github.com/PuerkitoBio/goquery](github.com/PuerkitoBio/goquery)
+   * [github.com/Rican7/retry](github.com/Rican7/retry)
 
 ## Installation
 
