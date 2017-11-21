@@ -10,8 +10,8 @@ This program takes a JSON array of student's register number with their email ID
 
 ## Dependencies
 
-   * [github.com/PuerkitoBio/goquery](github.com/PuerkitoBio/goquery)
-   * [github.com/Rican7/retry](github.com/Rican7/retry)
+   * [github.com/PuerkitoBio/goquery](https://github.com/PuerkitoBio/goquery)
+   * [github.com/Rican7/retry](https://github.com/Rican7/retry)
 
 ## Installation
 
