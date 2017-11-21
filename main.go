@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/smtp"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
@@ -69,7 +70,7 @@ func requestAUCOE(stud student, results chan result) {
 
 	res := result{
 		student:    stud,
-		Name:       extracted[1],
+		Name:       strings.Title(strings.ToLower(extracted[1])),
 		Department: extracted[2],
 		Results:    make(map[string]string),
 	}
